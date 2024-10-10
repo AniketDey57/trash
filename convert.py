@@ -63,4 +63,7 @@ if __name__ == '__main__':
             asyncio.run(main())
     except RuntimeError as e:
         if str(e) == "There is no current event loop in thread 'MainThread'.":
-            # For Python 3.10+ compatibility when no event
+            # For Python 3.10+ compatibility when no event loop exists initially
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop.run_until_complete(main())
