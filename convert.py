@@ -1,3 +1,4 @@
+import asyncio
 import os
 import ffmpeg
 from telegram import Update
@@ -28,16 +29,16 @@ async def handle_audio(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if audio_file.mime_type == 'audio/m4a':
         await update.message.reply_text('Converting your M4A file to MP3...')
         input_file = await audio_file.get_file().download()
-        output_file = f"{os.path.splitext(input_file.file_path)[0]}.mp3"
+        output_file = f"{os.path.splitext(input_file)[0]}.mp3"
 
-        if convert_m4a_to_mp3(input_file.file_path, output_file):
+        if convert_m4a_to_mp3(input_file, output_file):
             with open(output_file, 'rb') as f:
                 await context.bot.send_audio(chat_id=update.effective_chat.id, audio=f)
         else:
             await update.message.reply_text('Failed to convert the file.')
-
+        
         # Clean up files
-        os.remove(input_file.file_path)
+        os.remove(input_file)
         os.remove(output_file)
     else:
         await update.message.reply_text('Please send a valid M4A file.')
@@ -50,6 +51,14 @@ async def main():
 
     await app.run_polling()
 
+# Start the bot, check if event loop is already running
 if __name__ == '__main__':
-    import asyncio
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except RuntimeError as e:
+        if str(e) == "This event loop is already running":
+            # If an event loop is already running, use this method
+            loop = asyncio.get_event_loop()
+            loop.create_task(main())
+        else:
+            raise
