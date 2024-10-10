@@ -54,16 +54,12 @@ async def main():
 # Check if the event loop is already running
 if __name__ == '__main__':
     try:
-        loop = asyncio.get_event_loop()
-        if loop.is_running():
-            # If the loop is running, schedule the main coroutine
-            loop.create_task(main())
-        else:
-            # If no loop is running, run the main coroutine directly
-            asyncio.run(main())
-    except RuntimeError as e:
-        if str(e) == "There is no current event loop in thread 'MainThread'.":
-            # For Python 3.10+ compatibility when no event loop exists initially
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            loop.run_until_complete(main())
+        # Try to get the running loop
+        loop = asyncio.get_running_loop()
+        # If the loop is running, schedule the main coroutine
+        loop.create_task(main())
+    except RuntimeError:
+        # If no loop is running, create a new one and set it
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        loop.run_until_complete(main())
