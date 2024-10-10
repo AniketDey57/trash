@@ -49,17 +49,20 @@ async def main():
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.AUDIO, handle_audio))
 
-    await app.run_polling()
+    await app.start()  # Start the bot
+    await app.updater.start_polling()  # Begin polling for updates
+    await app.updater.idle()  # Keep the bot running
 
-# Check if the event loop is already running
+# Check if the event loop is already running and handle it
 if __name__ == '__main__':
     try:
-        # Try to get the running loop
-        loop = asyncio.get_running_loop()
-        # If the loop is running, schedule the main coroutine
-        loop.create_task(main())
+        loop = asyncio.get_event_loop()
+        if not loop.is_running():
+            loop.run_until_complete(main())
+        else:
+            asyncio.create_task(main())  # Schedule the main coroutine if the loop is already running
     except RuntimeError:
-        # If no loop is running, create a new one and set it
+        # If no event loop exists, create one and run the bot
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         loop.run_until_complete(main())
