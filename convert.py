@@ -44,7 +44,7 @@ async def handle_audio(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # Main function to run the bot
 async def main():
-    app = ApplicationBuilder().token('YOUR_BOT_TOKEN').build()
+    app = ApplicationBuilder().token('5707293090:AAHGLlHSx101F8T1DQYdcb9_MkRAjyCbt70').build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.AUDIO, handle_audio))
 
