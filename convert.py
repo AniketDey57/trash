@@ -1,5 +1,5 @@
-import asyncio
 import os
+import asyncio
 import ffmpeg
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
@@ -51,14 +51,16 @@ async def main():
 
     await app.run_polling()
 
-# Start the bot, check if event loop is already running
+# Check if the event loop is already running
 if __name__ == '__main__':
     try:
-        asyncio.run(main())
-    except RuntimeError as e:
-        if str(e) == "This event loop is already running":
-            # If an event loop is already running, use this method
-            loop = asyncio.get_event_loop()
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            # If the loop is running, schedule the main coroutine
             loop.create_task(main())
         else:
-            raise
+            # If no loop is running, run the main coroutine directly
+            asyncio.run(main())
+    except RuntimeError as e:
+        if str(e) == "There is no current event loop in thread 'MainThread'.":
+            # For Python 3.10+ compatibility when no event
