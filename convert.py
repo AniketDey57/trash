@@ -46,9 +46,11 @@ async def handle_audio(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # Main function to run the bot
 async def main():
     app = ApplicationBuilder().token('5707293090:AAHGLlHSx101F8T1DQYdcb9_MkRAjyCbt70').build()
+
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.AUDIO, handle_audio))
 
+    await app.initialize()  # Initialize the app
     await app.start()  # Start the bot
     await app.updater.start_polling()  # Begin polling for updates
     await app.updater.idle()  # Keep the bot running
